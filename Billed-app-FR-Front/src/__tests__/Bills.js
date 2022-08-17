@@ -5,8 +5,12 @@
 import {screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
+import Bills from '../containers/Bills.js';
+import userEvent from '@testing-library/user-event';
+
+import { ROUTES_PATH, ROUTES} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
+import store from '../app/Store.js';
 
 import router from "../app/Router.js";
 
@@ -25,7 +29,7 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //to-do write expect expression
+      expect(windowIcon.classList.contains('active-icon')).toBeTruthy();
 
     })
     test("Then bills should be ordered from earliest to latest", () => {
@@ -34,6 +38,29 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => ((a < b) ? 1 : -1)
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
+    })
+    test("When I click on iconEye button it displays a modal", () => {
+      $.fn.modal = jest.fn();
+			const html = BillsUI({ data: bills });
+			document.body.innerHTML = html;
+			const onNavigate = (pathname) => {
+				document.body.innerHTML = ROUTES({ pathname });
+			};
+			const container = new Bills({
+				document,
+				onNavigate,
+				store,
+				localStorage: window.localStorage,
+			});
+
+			const iconEye = screen.getAllByTestId('icon-eye');
+			const eye = iconEye[0];
+			userEvent.click(eye);
+			const modale = screen.getByTestId('modaleFile');
+			const billUrl = eye.getAttribute('data-bill-url').split('?')[0];
+			expect(modale.innerHTML.includes(billUrl)).toBeTruthy();
+			expect(modale).toBeTruthy();
+			expect($.fn.modal).toHaveBeenCalled();
     })
   })
 })
