@@ -2,7 +2,8 @@
   "scripts": {
     "test": "jest --coverage --noStackTrace --silent",
     "back": "cd ../Billed-app-FR-Back && npm run run:dev",
-    "front": "live-server"
+    "front": "live-server",
+    "full" : "npm run back & npm run front"
   },
   "jest": {
     "verbose": false,
