@@ -51,48 +51,48 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-
-
-
- // handleClickIconEye for container/Bills.js
- describe('When I click on the icon eye', () => {
-  test('A modal should open', () => {
+// LOADING PAGE for views/BillsUI.js
+describe("When I am on Bills page but it's loading", () => {
+  test('Then I should land on a loading page', () => {
     // build user interface
     const html = BillsUI({
-      data: bills
+      data: [],
+      loading: true
     });
     document.body.innerHTML = html;
+    
+    expect(screen.getAllByText('Loading...')).toBeTruthy();
+  });
+});
 
-    // Init firestore
-    const store = null;
-    // Init Bills
-    const allBills = new Bills({
-      document,
-      onNavigate,
-      store,
-      localStorage: window.localStorage,
-    });
+describe('Given I am connected as Admin and I am on Dashboard page and I clicked on a bill', () => {
+  describe('When I click on the icon eye', () => {
+    test('A modal should open', () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      window.localStorage.setItem('user', JSON.stringify({
+        type: 'Employee'
+      }))
+      document.body.innerHTML = BillsUI({ data: bills})
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const store = null
+      const allBills = new Bills({
+        document, onNavigate, store, bills, localStorage: window.localStorage
+      })
+  // Mock modal comportment
+  $.fn.modal = jest.fn();
+  const handleClickIconEye = jest.fn(() =>
+  allBills.handleClickIconEye(eye)
+);
 
-    // Mock modal comportment
-    $.fn.modal = jest.fn();
+      const eye = screen.getAllByTestId('icon-eye')[0]
+      eye.addEventListener('click', handleClickIconEye);
+      userEvent.click(eye);
+      expect(handleClickIconEye).toHaveBeenCalled()
 
-    // Get button eye in DOM
-    const eye = screen.getAllByTestId('icon-eye')[0];
-
-    // Mock function handleClickIconEye
-    const handleClickIconEye = jest.fn(() =>
-      allBills.handleClickIconEye(eye)
-    );
-
-    // Add Event and fire
-    eye.addEventListener('click', handleClickIconEye);
-    userEvent.click(eye);
-
-    // handleClickIconEye function must be called
-    expect(handleClickIconEye).toHaveBeenCalled();
-    const modale = document.getElementById('modaleFile');
-    // The modal must be present
-    expect(modale).toBeTruthy();
+      const modale = document.getElementById('modaleFile')
+      expect(modale).toBeTruthy()
+    })
   })
 })
-
