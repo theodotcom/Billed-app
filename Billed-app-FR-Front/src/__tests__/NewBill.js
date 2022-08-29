@@ -38,3 +38,16 @@ describe("Given I am connected as an employee", () => {
     })
   })
 })
+
+describe("When I am on NewBill page but it's loading", () => {
+  test('Then I should land on a loading page', () => {
+    // build user interface
+    const html = NewBillUI({
+      data: [],
+      loading: true
+    });
+    document.body.innerHTML = html;
+    
+    expect(screen.getAllByText('Loading...')).toBeTruthy();
+  });
+});
