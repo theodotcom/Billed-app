@@ -2,11 +2,20 @@
  * @jest-environment jsdom
  */
 
+ import { 
+  getByTestId,
+  getAllByTestId,
+  getAllByAltText,
+  getByRole,
+  toHaveClass
+ } from '@testing-library/dom'
+ import userEvent from '@testing-library/user-event'
+
+
 import {screen, waitFor} from "@testing-library/dom"
 import BillsUI from "../views/BillsUI.js"
 import { bills } from "../fixtures/bills.js"
 import Bills from '../containers/Bills.js';
-import userEvent from '@testing-library/user-event';
 
 import { ROUTES_PATH, ROUTES} from "../constants/routes.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
@@ -39,28 +48,51 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
-    test("When I click on iconEye button it displays a modal", () => {
-      $.fn.modal = jest.fn();
-			const html = BillsUI({ data: bills });
-			document.body.innerHTML = html;
-			const onNavigate = (pathname) => {
-				document.body.innerHTML = ROUTES({ pathname });
-			};
-			const container = new Bills({
-				document,
-				onNavigate,
-				store,
-				localStorage: window.localStorage,
-			});
-
-			const iconEye = screen.getAllByTestId('icon-eye');
-			const eye = iconEye[0];
-			userEvent.click(eye);
-			const modale = screen.getByTestId('modaleFile');
-			const billUrl = eye.getAttribute('data-bill-url').split('?')[0];
-			expect(modale.innerHTML.includes(billUrl)).toBeTruthy();
-			expect(modale).toBeTruthy();
-			expect($.fn.modal).toHaveBeenCalled();
-    })
   })
 })
+
+
+
+
+ // handleClickIconEye for container/Bills.js
+ describe('When I click on the icon eye', () => {
+  test('A modal should open', () => {
+    // build user interface
+    const html = BillsUI({
+      data: bills
+    });
+    document.body.innerHTML = html;
+
+    // Init firestore
+    const store = null;
+    // Init Bills
+    const allBills = new Bills({
+      document,
+      onNavigate,
+      store,
+      localStorage: window.localStorage,
+    });
+
+    // Mock modal comportment
+    $.fn.modal = jest.fn();
+
+    // Get button eye in DOM
+    const eye = screen.getAllByTestId('icon-eye')[0];
+
+    // Mock function handleClickIconEye
+    const handleClickIconEye = jest.fn(() =>
+      allBills.handleClickIconEye(eye)
+    );
+
+    // Add Event and fire
+    eye.addEventListener('click', handleClickIconEye);
+    userEvent.click(eye);
+
+    // handleClickIconEye function must be called
+    expect(handleClickIconEye).toHaveBeenCalled();
+    const modale = document.getElementById('modaleFile');
+    // The modal must be present
+    expect(modale).toBeTruthy();
+  })
+})
+
