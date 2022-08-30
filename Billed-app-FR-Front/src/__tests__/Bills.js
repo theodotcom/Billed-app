@@ -67,7 +67,7 @@ describe("When I am on Bills page but it's loading", () => {
 
 describe('Given I am connected as an Employee and I am on Bills Page', () => {
   describe('When I click on the icon eye', () => {
-    test('A modal should open', () => {
+    test('HandleClickOnEye executes itself', () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee'
@@ -92,6 +92,7 @@ describe('Given I am connected as an Employee and I am on Bills Page', () => {
 
       const modale = document.getElementById('modaleFile')
       expect(modale).toBeTruthy()
+      // a changer
     })
   })
 })
