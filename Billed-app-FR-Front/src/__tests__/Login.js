@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import LoginUI from "../views/LoginUI";
 import Login from "../containers/Login.js";
 import { ROUTES } from "../constants/routes";
@@ -163,8 +159,8 @@ describe("Given that I am a user on login page", () => {
       document.body.innerHTML = LoginUI();
       const inputData = {
         type: "Admin",
-        email: "johndoe@email.com",
-        password: "azerty",
+        email: "jeanmichel@email.com",
+        password: "tagada",
         status: "connected",
       };
 
